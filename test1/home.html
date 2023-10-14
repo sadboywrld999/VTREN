@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+</head>
+<body>
+    <h1>Welcome, {{ current_user.username }}!</h1>
+    <form action="/logout" method="post">
+        <input type="submit" value="Logout">
+    </form>
+    <div id="chat-box">
+        <ul id="messages"></ul>
+        <form id="form" action="">
+            <input id="input" autocomplete="off" /><button>Send</button>
+        </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        socket.on('message', function(msg) {
+            $('#messages').append($('<li>').text(msg.username + ': ' + msg.message));
+        });
+        $(function() {
+            $('form').submit(function() {
+                socket.emit('message', {message: $('#input').val(), username: '{{ current_user.username }}'});
+                $('#input').val('');
+                return false;
+            });
+        });
+    </script>
+</body>
+</html>
